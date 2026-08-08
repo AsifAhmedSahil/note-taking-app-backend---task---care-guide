@@ -76,6 +76,22 @@ const getUserById = async (req, res, next) => {
   }
 };
 
+const getUsersByInterest = async (req, res, next) => {
+  try {
+    const groups = await userService.getUsersByInterest();
+    res.status(200).json({
+      success: true,
+      data: groups.map((group) => ({
+        interest: group._id,
+        count: group.count,
+        users: group.users,
+      })),
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const updateUser = async (req, res, next) => {
   try {
     const allowedFields = ['name', 'email', 'password', 'role', 'interests'];
@@ -126,6 +142,7 @@ module.exports = {
   createUser,
   listUsers,
   getUserById,
+  getUsersByInterest,
   updateUser,
   deleteUser,
 };
