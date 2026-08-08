@@ -27,6 +27,20 @@ const getUserById = async (id) => {
   return User.findById(id);
 };
 
+const getUsersByInterest = async () => {
+  return User.aggregate([
+    { $unwind: '$interests' },
+    {
+      $group: {
+        _id: '$interests',
+        count: { $sum: 1 },
+        users: { $push: { id: '$_id', name: '$name' } },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+};
+
 const updateUser = async (id, updates) => {
   if (updates.password) {
     updates.password = await bcrypt.hash(updates.password, 10);
@@ -45,6 +59,7 @@ module.exports = {
   createUser,
   listUsers,
   getUserById,
+  getUsersByInterest,
   updateUser,
   deleteUser,
 };
