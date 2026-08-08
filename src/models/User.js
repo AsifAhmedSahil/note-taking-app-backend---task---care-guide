@@ -45,4 +45,6 @@ const userSchema = new mongoose.Schema(
 // that no two users can share the same email address.
 userSchema.index({ email: 1 }, { unique: true });
 
+userSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('User', userSchema);

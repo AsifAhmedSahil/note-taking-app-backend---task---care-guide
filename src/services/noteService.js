@@ -4,12 +4,25 @@ const createNote = async ({ title, content, owner }) => {
   return Note.create({ title, content, owner });
 };
 
-const listNotesByOwner = async (ownerId) => {
-  return Note.find({ owner: ownerId }).sort({ createdAt: -1 });
+const listNotesByOwner = async ({ ownerId, page, limit, skip }) => {
+  const filter = { owner: ownerId };
+  const total = await Note.countDocuments(filter);
+  const notes = await Note.find(filter)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+  return { notes, total };
 };
 
-const listAllNotes = async () => {
-  return Note.find().sort({ createdAt: -1 }).populate('owner', 'name email');
+const listAllNotes = async ({ page, limit, skip }) => {
+  const filter = {};
+  const total = await Note.countDocuments(filter);
+  const notes = await Note.find(filter)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .populate('owner', 'name email');
+  return { notes, total };
 };
 
 const getNoteById = async (noteId, ownerId) => {

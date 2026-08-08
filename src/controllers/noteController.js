@@ -1,4 +1,5 @@
 const noteService = require('../services/noteService');
+const { getPaginationParams } = require('../utils/pagination');
 
 const sanitizeNote = (note) => ({
   id: note._id,
@@ -37,10 +38,22 @@ const createNote = async (req, res, next) => {
 
 const listMyNotes = async (req, res, next) => {
   try {
-    const notes = await noteService.listNotesByOwner(req.user.id);
+    const { page, limit, skip } = getPaginationParams(req.query);
+    const { notes, total } = await noteService.listNotesByOwner({
+      ownerId: req.user.id,
+      page,
+      limit,
+      skip,
+    });
     res.status(200).json({
       success: true,
-      notes: notes.map(sanitizeNote),
+      data: notes.map(sanitizeNote),
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (err) {
     next(err);
@@ -117,10 +130,21 @@ const deleteMyNote = async (req, res, next) => {
 
 const listAllNotes = async (req, res, next) => {
   try {
-    const notes = await noteService.listAllNotes();
+    const { page, limit, skip } = getPaginationParams(req.query);
+    const { notes, total } = await noteService.listAllNotes({
+      page,
+      limit,
+      skip,
+    });
     res.status(200).json({
       success: true,
-      notes: notes.map(sanitizeNote),
+      data: notes.map(sanitizeNote),
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (err) {
     next(err);

@@ -13,8 +13,14 @@ const createUser = async ({ name, email, password, role, interests }) => {
   });
 };
 
-const listUsers = async () => {
-  return User.find().sort({ createdAt: -1 });
+const listUsers = async ({ page, limit, skip }) => {
+  const filter = {};
+  const total = await User.countDocuments(filter);
+  const users = await User.find(filter)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+  return { users, total };
 };
 
 const getUserById = async (id) => {

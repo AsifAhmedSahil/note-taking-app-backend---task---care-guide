@@ -1,4 +1,5 @@
 const userService = require('../services/userService');
+const { getPaginationParams } = require('../utils/pagination');
 
 const sanitizeUser = (user) => ({
   id: user._id,
@@ -40,10 +41,17 @@ const createUser = async (req, res, next) => {
 
 const listUsers = async (req, res, next) => {
   try {
-    const users = await userService.listUsers();
+    const { page, limit, skip } = getPaginationParams(req.query);
+    const { users, total } = await userService.listUsers({ page, limit, skip });
     res.status(200).json({
       success: true,
-      users: users.map(sanitizeUser),
+      data: users.map(sanitizeUser),
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (err) {
     next(err);
