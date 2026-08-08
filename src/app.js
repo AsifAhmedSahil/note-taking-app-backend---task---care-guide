@@ -1,5 +1,7 @@
 const express = require('express');
 
+const authRoutes = require('./routes/auth.routes');
+
 const app = express();
 
 app.use(express.json());
@@ -10,6 +12,8 @@ app.get('/health', (req, res) => {
     message: 'API is running',
   });
 });
+
+app.use('/api/auth', authRoutes);
 
 // Centralized error handler stub
 // eslint-disable-next-line no-unused-vars
