@@ -5,7 +5,7 @@ const { signToken } = require('../utils/jwt');
 
 const register = async (req, res, next) => {
   try {
-    const { name, email, password, interests } = req.body;
+    const { name, email, password, interests, role } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -26,11 +26,18 @@ const register = async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Public registration always creates a "user" account.
+    // For local development/testing, ALLOW_ADMIN_REGISTRATION=true allows
+    // bootstrapping an admin. Default is false so production stays locked down.
+    const allowAdminRegistration = process.env.ALLOW_ADMIN_REGISTRATION === 'true';
+    const userRole = allowAdminRegistration && role ? role : 'user';
+
     const user = await User.create({
       name,
       email: normalizedEmail,
       password: hashedPassword,
       interests: interests || [],
+      role: userRole,
     });
 
     const token = signToken(user);
