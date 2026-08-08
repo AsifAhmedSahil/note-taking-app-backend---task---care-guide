@@ -1,0 +1,19 @@
+{
+  "name": "secure-note-taking-backend",
+  "version": "1.0.0",
+  "description": "Backend API for a secure note-taking application",
+  "main": "src/server.js",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.9.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
