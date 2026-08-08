@@ -1,16 +1,32 @@
-const bcrypt = require('bcryptjs');
+import bcrypt from 'bcryptjs';
 
-const User = require('../models/User');
-const { signToken } = require('../utils/jwt');
+import User from '../models/User.js';
+import { signToken } from '../utils/jwt.js';
+import {
+  isNonEmptyString,
+  isValidEmail,
+  isArrayOfStrings,
+} from '../utils/validate.js';
 
 const register = async (req, res, next) => {
   try {
     const { name, email, password, interests, role } = req.body;
 
-    if (!name || !email || !password) {
+    if (
+      !isNonEmptyString(name) ||
+      !isValidEmail(email) ||
+      !isNonEmptyString(password)
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Name, email and password are required.',
+        message: 'A valid name, email and password are required.',
+      });
+    }
+
+    if (interests !== undefined && !isArrayOfStrings(interests)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Interests must be an array of strings.',
       });
     }
 
@@ -62,7 +78,7 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    if (!isValidEmail(email) || !isNonEmptyString(password)) {
       return res.status(400).json({
         success: false,
         message: 'Email and password are required.',
@@ -106,4 +122,4 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login };
+export { register, login };

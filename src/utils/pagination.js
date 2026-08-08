@@ -21,4 +21,4 @@ const getPaginationParams = (query) => {
   return { page, limit, skip: (page - 1) * limit };
 };
 
-module.exports = { getPaginationParams, DEFAULT_LIMIT, MAX_LIMIT };
+export { getPaginationParams, DEFAULT_LIMIT, MAX_LIMIT };

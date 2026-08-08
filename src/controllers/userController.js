@@ -1,5 +1,13 @@
-const userService = require('../services/userService');
-const { getPaginationParams } = require('../utils/pagination');
+import mongoose from 'mongoose';
+
+import * as userService from '../services/userService.js';
+import { getPaginationParams } from '../utils/pagination.js';
+import {
+  isNonEmptyString,
+  isValidEmail,
+  isArrayOfStrings,
+  isValidRole,
+} from '../utils/validate.js';
 
 const sanitizeUser = (user) => ({
   id: user._id,
@@ -15,10 +23,28 @@ const createUser = async (req, res, next) => {
   try {
     const { name, email, password, role = 'user', interests = [] } = req.body;
 
-    if (!name || !email || !password) {
+    if (
+      !isNonEmptyString(name) ||
+      !isValidEmail(email) ||
+      !isNonEmptyString(password)
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Name, email and password are required.',
+        message: 'A valid name, email and password are required.',
+      });
+    }
+
+    if (!isValidRole(role)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Role must be either user or admin.',
+      });
+    }
+
+    if (!isArrayOfStrings(interests)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Interests must be an array of strings.',
       });
     }
 
@@ -58,8 +84,20 @@ const listUsers = async (req, res, next) => {
   }
 };
 
+const isValidUserId = (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400).json({
+      success: false,
+      message: 'Invalid user id.',
+    });
+    return false;
+  }
+  return true;
+};
+
 const getUserById = async (req, res, next) => {
   try {
+    if (!isValidUserId(req, res)) return;
     const user = await userService.getUserById(req.params.id);
     if (!user) {
       return res.status(404).json({
@@ -94,6 +132,7 @@ const getUsersByInterest = async (req, res, next) => {
 
 const updateUser = async (req, res, next) => {
   try {
+    if (!isValidUserId(req, res)) return;
     const allowedFields = ['name', 'email', 'password', 'role', 'interests'];
     const updates = {};
 
@@ -102,6 +141,37 @@ const updateUser = async (req, res, next) => {
         updates[field] = req.body[field];
       }
     });
+
+    if (updates.name !== undefined && !isNonEmptyString(updates.name)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name must be a non-empty string.',
+      });
+    }
+    if (updates.email !== undefined && !isValidEmail(updates.email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'A valid email is required.',
+      });
+    }
+    if (updates.password !== undefined && !isNonEmptyString(updates.password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be a non-empty string.',
+      });
+    }
+    if (updates.role !== undefined && !isValidRole(updates.role)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Role must be either user or admin.',
+      });
+    }
+    if (updates.interests !== undefined && !isArrayOfStrings(updates.interests)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Interests must be an array of strings.',
+      });
+    }
 
     const user = await userService.updateUser(req.params.id, updates);
     if (!user) {
@@ -122,6 +192,7 @@ const updateUser = async (req, res, next) => {
 
 const deleteUser = async (req, res, next) => {
   try {
+    if (!isValidUserId(req, res)) return;
     const user = await userService.deleteUser(req.params.id);
     if (!user) {
       return res.status(404).json({
@@ -138,7 +209,7 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-module.exports = {
+export {
   createUser,
   listUsers,
   getUserById,

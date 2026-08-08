@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const noteSchema = new mongoose.Schema(
   {
@@ -28,4 +28,4 @@ noteSchema.index({ owner: 1, createdAt: -1 });
 
 noteSchema.index({ createdAt: -1 });
 
-module.exports = mongoose.model('Note', noteSchema);
+export default mongoose.model('Note', noteSchema);

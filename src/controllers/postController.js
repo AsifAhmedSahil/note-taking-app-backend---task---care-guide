@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const postService = require('../services/postService');
+import * as postService from '../services/postService.js';
 
 const getPostsByUser = async (req, res, next) => {
   try {
@@ -24,4 +24,4 @@ const getPostsByUser = async (req, res, next) => {
   }
 };
 
-module.exports = { getPostsByUser };
+export { getPostsByUser };

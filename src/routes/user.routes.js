@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 
-const userController = require('../controllers/userController');
-const { protect } = require('../middleware/auth');
-const { requireAdmin } = require('../middleware/authorize');
+import * as userController from '../controllers/userController.js';
+import { protect } from '../middleware/auth.js';
+import { requireAdmin } from '../middleware/authorize.js';
 
 const router = express.Router();
 
@@ -15,4 +15,4 @@ router.get('/:id', userController.getUserById);
 router.patch('/:id', userController.updateUser);
 router.delete('/:id', userController.deleteUser);
 
-module.exports = router;
+export default router;

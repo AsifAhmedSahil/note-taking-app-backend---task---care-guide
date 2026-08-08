@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Backend API for a secure note-taking application",
   "main": "src/server.js",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "nodemon src/server.js",

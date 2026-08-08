@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const Post = require('../models/Post');
+import Post from '../models/Post.js';
 
 const getPostsByUser = async (userId) => {
   return Post.aggregate([
@@ -30,4 +30,4 @@ const getPostsByUser = async (userId) => {
   ]);
 };
 
-module.exports = { getPostsByUser };
+export { getPostsByUser };

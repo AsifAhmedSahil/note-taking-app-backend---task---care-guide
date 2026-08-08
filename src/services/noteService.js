@@ -1,4 +1,4 @@
-const Note = require('../models/Note');
+import Note from '../models/Note.js';
 
 const createNote = async ({ title, content, owner }) => {
   return Note.create({ title, content, owner });
@@ -40,7 +40,7 @@ const deleteNote = async (noteId, ownerId) => {
   return Note.findOneAndDelete({ _id: noteId, owner: ownerId });
 };
 
-module.exports = {
+export {
   createNote,
   listNotesByOwner,
   listAllNotes,

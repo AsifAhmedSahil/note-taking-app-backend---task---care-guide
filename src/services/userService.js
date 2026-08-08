@@ -1,6 +1,6 @@
-const bcrypt = require('bcryptjs');
+import bcrypt from 'bcryptjs';
 
-const User = require('../models/User');
+import User from '../models/User.js';
 
 const createUser = async ({ name, email, password, role, interests }) => {
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -55,7 +55,7 @@ const deleteUser = async (id) => {
   return User.findByIdAndDelete(id);
 };
 
-module.exports = {
+export {
   createUser,
   listUsers,
   getUserById,

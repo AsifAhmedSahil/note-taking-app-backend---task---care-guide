@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 
-const noteController = require('../controllers/noteController');
-const { protect } = require('../middleware/auth');
-const { requireAdmin } = require('../middleware/authorize');
+import * as noteController from '../controllers/noteController.js';
+import { protect } from '../middleware/auth.js';
+import { requireAdmin } from '../middleware/authorize.js';
 
 const router = express.Router();
 
@@ -14,4 +14,4 @@ router.get('/notes/:id', protect, noteController.getMyNote);
 router.patch('/notes/:id', protect, noteController.updateMyNote);
 router.delete('/notes/:id', protect, noteController.deleteMyNote);
 
-module.exports = router;
+export default router;

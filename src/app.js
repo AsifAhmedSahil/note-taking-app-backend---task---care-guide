@@ -1,9 +1,10 @@
-const express = require('express');
+import express from 'express';
 
-const authRoutes = require('./routes/auth.routes');
-const userRoutes = require('./routes/user.routes');
-const noteRoutes = require('./routes/note.routes');
-const postRoutes = require('./routes/post.routes');
+import authRoutes from './routes/auth.routes.js';
+import userRoutes from './routes/user.routes.js';
+import noteRoutes from './routes/note.routes.js';
+import postRoutes from './routes/post.routes.js';
+import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
 
@@ -21,13 +22,13 @@ app.use('/api/users', userRoutes);
 app.use('/api', noteRoutes);
 app.use('/api/posts', postRoutes);
 
-// Centralized error handler stub
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  res.status(err.status || 500).json({
+app.use((req, res) => {
+  res.status(404).json({
     success: false,
-    message: err.message || 'Internal server error',
+    message: 'Route not found.',
   });
 });
 
-module.exports = app;
+app.use(errorHandler);
+
+export default app;
