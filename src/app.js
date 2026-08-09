@@ -10,6 +10,13 @@ const app = express();
 
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Welcome to the Note Taking App',
+  });
+});
+
 app.get('/health', (req, res) => {
   res.json({
     success: true,
