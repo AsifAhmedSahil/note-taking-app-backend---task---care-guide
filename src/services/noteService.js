@@ -1,11 +1,20 @@
 import Note from '../models/Note.js';
 
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const createNote = async ({ title, content, owner }) => {
   return Note.create({ title, content, owner });
 };
 
-const listNotesByOwner = async ({ ownerId, page, limit, skip }) => {
+const listNotesByOwner = async ({ ownerId, page, limit, skip, search = '' }) => {
   const filter = { owner: ownerId };
+
+  if (search) {
+    // Escape user input so search terms are treated as literal text, not regex.
+    const pattern = new RegExp(escapeRegex(search), 'i');
+    filter.$or = [{ title: pattern }, { content: pattern }];
+  }
+
   const total = await Note.countDocuments(filter);
   const notes = await Note.find(filter)
     .sort({ createdAt: -1 })

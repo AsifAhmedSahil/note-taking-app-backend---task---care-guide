@@ -53,11 +53,14 @@ const createNote = async (req, res, next) => {
 const listMyNotes = async (req, res, next) => {
   try {
     const { page, limit, skip } = getPaginationParams(req.query);
+    const search =
+      typeof req.query.search === 'string' ? req.query.search.trim() : '';
     const { notes, total } = await noteService.listNotesByOwner({
       ownerId: req.user.id,
       page,
       limit,
       skip,
+      search,
     });
     res.status(200).json({
       success: true,
