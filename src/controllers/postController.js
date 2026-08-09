@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 import * as postService from '../services/postService.js';
+import { getPaginationParams } from '../utils/pagination.js';
 
 const getPostsByUser = async (req, res, next) => {
   try {
@@ -13,11 +14,23 @@ const getPostsByUser = async (req, res, next) => {
       });
     }
 
-    const posts = await postService.getPostsByUser(userId);
+    const { page, limit, skip } = getPaginationParams(req.query);
+    const { posts, total } = await postService.getPostsByUser({
+      userId,
+      page,
+      limit,
+      skip,
+    });
 
     res.status(200).json({
       success: true,
       data: posts,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (err) {
     next(err);

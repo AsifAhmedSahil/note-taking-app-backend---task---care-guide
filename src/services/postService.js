@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 
 import Post from '../models/Post.js';
 
-const getPostsByUser = async (userId) => {
-  return Post.aggregate([
+const getPostsByUser = async ({ userId, page, limit, skip }) => {
+  const [result] = await Post.aggregate([
     { $match: { userId: new mongoose.Types.ObjectId(userId) } },
     {
       $lookup: {
@@ -27,7 +27,18 @@ const getPostsByUser = async (userId) => {
         },
       },
     },
+    {
+      $facet: {
+        data: [{ $skip: skip }, { $limit: limit }],
+        metadata: [{ $count: 'total' }],
+      },
+    },
   ]);
+
+  const posts = result?.data ?? [];
+  const total = result?.metadata?.[0]?.total ?? 0;
+
+  return { posts, total };
 };
 
 export { getPostsByUser };
