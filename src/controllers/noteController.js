@@ -164,10 +164,13 @@ const deleteMyNote = async (req, res, next) => {
 const listAllNotes = async (req, res, next) => {
   try {
     const { page, limit, skip } = getPaginationParams(req.query);
+    const search =
+      typeof req.query.search === 'string' ? req.query.search.trim() : '';
     const { notes, total } = await noteService.listAllNotes({
       page,
       limit,
       skip,
+      search,
     });
     res.status(200).json({
       success: true,

@@ -23,8 +23,14 @@ const listNotesByOwner = async ({ ownerId, page, limit, skip, search = '' }) => 
   return { notes, total };
 };
 
-const listAllNotes = async ({ page, limit, skip }) => {
+const listAllNotes = async ({ page, limit, skip, search = '' }) => {
   const filter = {};
+
+  if (search) {
+    const pattern = new RegExp(escapeRegex(search), 'i');
+    filter.$or = [{ title: pattern }, { content: pattern }];
+  }
+
   const total = await Note.countDocuments(filter);
   const notes = await Note.find(filter)
     .sort({ createdAt: -1 })
